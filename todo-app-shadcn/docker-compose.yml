@@ -12,3 +12,5 @@ services:
       - /app/node_modules
     # 開発サーバーを起動するコマンドに上書き
     command: npm run dev
+    environment:
+      - WATCHPACK_POLLING=true
