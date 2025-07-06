@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 
 type Task = {
@@ -35,17 +37,22 @@ const TodoPage = () => {
     );
   };
 
+  const handleDeleteTask = (id: string) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
   return (
     <main className="container mx-auto mt-10 max-w-2xl">
       <h1 className="text-3xl font-bold text-center mb-6">Todo App</h1>
 
       {/* Todo追加フォーム */}
       <div className="flex gap-2 mb-6">
-        <input
+        <Input
           type="text"
           placeholder="新しいタスクを入力..."
+          value={newTaskText}
           onChange={(e) => setNewTaskText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAddTask}
+          onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
         />
         <Button onClick={handleAddTask}>追加</Button>
       </div>
@@ -70,7 +77,13 @@ const TodoPage = () => {
             >
               {task.text}
             </label>
-            {/* あとで削除ボタンを追加する */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => handleDeleteTask(task.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         ))}
       </div>
