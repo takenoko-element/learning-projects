@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Trash2, Pencil, PenOff } from 'lucide-react';
+import React, { useState } from 'react';
 
 type Task = {
   id: string;
@@ -15,8 +15,11 @@ type Task = {
 const TodoPage = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = useState('');
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editTaskText, setEditTaskText] = useState('');
 
-  const handleAddTask = () => {
+  const handleAddTask = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!newTaskText.trim()) return;
 
     const newTask: Task = {
@@ -37,6 +40,26 @@ const TodoPage = () => {
     );
   };
 
+  const handleStartEdit = (task: Task) => {
+    setEditingTaskId(task.id);
+    setEditTaskText(task.text);
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editTaskText.trim()) {
+      setTasks(
+        tasks.map((task) => {
+          return task.id === editingTaskId
+            ? { ...task, text: editTaskText }
+            : task;
+        }),
+      );
+    }
+    setEditingTaskId(null);
+    setEditTaskText('');
+  };
+
   const handleDeleteTask = (id: string) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
@@ -46,16 +69,15 @@ const TodoPage = () => {
       <h1 className="text-3xl font-bold text-center mb-6">Todo App</h1>
 
       {/* Todo追加フォーム */}
-      <div className="flex gap-2 mb-6">
+      <form onSubmit={handleAddTask} className="flex gap-2 mb-6">
         <Input
           type="text"
           placeholder="新しいタスクを入力..."
           value={newTaskText}
           onChange={(e) => setNewTaskText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
         />
-        <Button onClick={handleAddTask}>追加</Button>
-      </div>
+        <Button type="submit">追加</Button>
+      </form>
 
       {/* Todoリスト */}
       <div className="space-y-4">
@@ -69,14 +91,40 @@ const TodoPage = () => {
               checked={task.completed}
               onCheckedChange={() => handleToggleTask(task.id)}
             />
-            <label
-              htmlFor={task.id}
-              className={`ml-3 text-lg flex-grow ${
-                task.completed ? 'line-through text-muted-foreground' : ''
-              }`}
-            >
-              {task.text}
-            </label>
+            {task.id === editingTaskId ? (
+              <form
+                onSubmit={handleSaveEdit}
+                className="flex flex-grow gap-2 items-center"
+              >
+                <Input
+                  type="text"
+                  value={editTaskText}
+                  onChange={(e) => setEditTaskText(e.target.value)}
+                  autoFocus
+                />
+                <Button type="submit" variant="ghost" size="icon">
+                  <PenOff className="h-4 w-4" />
+                </Button>
+              </form>
+            ) : (
+              <>
+                <label
+                  htmlFor={task.id}
+                  className={`ml-3 text-lg flex-grow ${
+                    task.completed ? 'line-through text-muted-foreground' : ''
+                  }`}
+                >
+                  {task.text}
+                </label>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleStartEdit(task)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </>
+            )}
             <Button
               variant="ghost"
               size="icon"
