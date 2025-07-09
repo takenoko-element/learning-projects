@@ -1,6 +1,12 @@
 {
-  "extends": [
-    "next/core-web-vitals",
-    "prettier" // この行を末尾に追加
-  ]
+  "extends": ["next/core-web-vitals", "plugin:prettier/recommended"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ]
+  }
 }
