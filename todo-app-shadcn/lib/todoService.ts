@@ -15,3 +15,16 @@ export const createTodo = async (text: string, user: User) => {
 
   return newTodo;
 };
+
+export const updateTodoStatus = async (
+  id: string,
+  data: { text?: string; completed?: boolean },
+) => {
+  const updateTodo = await prisma.todo.update({
+    where: {
+      id: BigInt(id),
+    },
+    data: data,
+  });
+  return updateTodo;
+};
