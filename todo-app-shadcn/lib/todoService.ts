@@ -28,3 +28,12 @@ export const updateTodoStatus = async (
   });
   return updateTodo;
 };
+
+export const deleteTodo = async (id: string) => {
+  const deleteTodo = await prisma.todo.delete({
+    where: {
+      id: BigInt(id),
+    },
+  });
+  return deleteTodo;
+};
